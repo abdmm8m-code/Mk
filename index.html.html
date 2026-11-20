@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday ❤️ | مفاجأة خاصة لك</title>
+  
+  <!-- خطوط عربية وإنجليزية رومانسية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  
+  <!-- مكتبة توليد كود QR -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #130612;
+      --bg-velvet: #2a0a24;
+      --accent-pink: #ff4d79;
+      --accent-rose: #ff8fa3;
+      --accent-gold: #ffd166;
+      --glass-bg: rgba(38, 12, 34, 0.62);
+      --glass-border: rgba(255, 182, 193, 0.25);
+      --text-main: #fff5f7;
+      --text-muted: #f3c6d3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top center, #3b0d31 0%, var(--bg-velvet) 45%, var(--bg-dark) 100%);
+      color: var(--text-main);
+      font-family: 'Cairo', sans-serif;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* خلفية القلوب والنجوم المتحركة */
+    #hearts-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* توهج خلفي ناعم */
+    .ambient-glow {
+      position: fixed;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 77, 121, 0.22), transparent 70%);
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 0;
+      animation: floatGlow 8s ease-in-out infinite alternate;
+    }
+    .glow-1 { top: -80px; right: -60px; }
+    .glow-2 { bottom: -80px; left: -60px; background: radial-gradient(circle, rgba(255, 209, 102, 0.16), transparent 70%); animation-delay: 2s; }
+
+    @keyframes floatGlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(25px, 30px) scale(1.15); }
+    }
+
+    /* الحاوية الرئيسية */
+    .container {
+      width: 100%;
+      max-width: 520px;
+      padding: 20px 16px 40px;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    /* ================= شاشة الظرف الرومانسي ================= */
+    #envelope-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 82vh;
+      width: 100%;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    #envelope-screen.hidden {
+      opacity: 0;
+      transform: scale(0.92) translateY(-20px);
+      pointer-events: none;
+      display: none;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 290px;
+      height: 195px;
+      margin: 20px auto 30px;
+      cursor: pointer;
+      perspective: 1000px;
+      animation: envelopeFloat 3.5s ease-in-out infinite;
+    }
+
+    @keyframes envelopeFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .envelope-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #5c1343, #3a0929);
+      border-radius: 14px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 77, 121, 0.35);
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      overflow: hidden;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 145px solid transparent;
+      border-right: 145px solid transparent;
+      border-top: 108px solid #751955;
+      transform-origin: top;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+
+    .envelope-wrapper.opening .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 145px solid #4b0e36;
+      border-right: 145px solid #4b0e36;
+      border-bottom: 100px solid #631448;
+      border-top: 95px solid transparent;
+      z-index: 2;
+      border-radius: 0 0 14px 14px;
+    }
+
+    .letter-peek {
+      position: absolute;
+      bottom: 12px;
+      left: 18px;
+      right: 18px;
+      height: 145px;
+      background: linear-gradient(180deg, #fff9fb, #ffe6ee);
+      border-radius: 10px;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 18px;
+      color: #5c1343;
+      transition: transform 0.7s ease;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    }
+
+    .envelope-wrapper.opening .letter-peek {
+      transform: translateY(-55px);
+    }
+
+    .letter-peek span {
+      font-family: 'Great Vibes', cursive;
+      font-size: 26px;
+      color: #c9184a;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 82px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 58px;
+      height: 58px;
+      background: radial-gradient(circle at 30% 30%, #ff4d79, #a4133c);
+      border-radius: 50%;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(255, 209, 102, 0.45);
+      animation: heartbeat 1.4s infinite;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .envelope-wrapper.opening .wax-seal {
+      opacity: 0;
+      transform: translateX(-50%) scale(1.4);
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      15% { transform: translateX(-50%) scale(1.14); }
+      30% { transform: translateX(-50%) scale(1); }
+      45% { transform: translateX(-50%) scale(1.1); }
+    }
+
+    .recipient-tag {
+      font-size: 1.15rem;
+      color: var(--accent-gold);
+      margin-bottom: 6px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .open-btn {
+      background: linear-gradient(135deg, #ff4d79, #c9184a);
+      color: #fff;
+      border: 1px solid rgba(255, 209, 102, 0.5);
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(255, 77, 121, 0.45);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .open-btn:hover, .open-btn:active {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 30px rgba(255, 77, 121, 0.65);
+    }
+
+    /* ================= بطاقة عيد الميلاد ================= */
+    #card-screen {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      animation: cardEntrance 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    #card-screen.visible {
+      display: flex;
+    }
+
+    @keyframes cardEntrance {
+      0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .top-controls {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 30px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .pill-btn:hover {
+      background: rgba(255, 77, 121, 0.28);
+      border-color: var(--accent-pink);
+    }
+
+    .birthday-card {
+      width: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: 26px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.55), inset 0 0 30px rgba(255, 77, 121, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .birthday-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold), var(--accent-pink), transparent);
+    }
+
+    .en-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.4rem;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffd166 10%, #ff8fa3 50%, #ff4d79 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 12px rgba(255, 77, 121, 0.35));
+      margin-bottom: 4px;
+      direction: ltr;
+    }
+
+    .recipient-name {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      margin-bottom: 14px;
+      text-shadow: 0 2px 10px rgba(255, 209, 102, 0.3);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 14px 0 18px;
+      color: var(--accent-rose);
+      font-size: 0.9rem;
+    }
+
+    .divider::before, .divider::after {
+      content: "";
+      height: 1px;
+      width: 55px;
+      background: linear-gradient(90deg, transparent, rgba(255, 143, 163, 0.5), transparent);
+    }
+
+    .main-message {
+      font-family: 'Amiri', serif;
+      font-size: 1.38rem;
+      line-height: 1.9;
+      color: #fff;
+      margin-bottom: 22px;
+      white-space: pre-line;
+      transition: opacity 0.35s ease;
+    }
+
+    .quote-box {
+      background: rgba(255, 255, 255, 0.06);
+      border-right: 3px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 22px;
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4d79, #d90429);
+      color: white;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 50px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 77, 121, 0.35);
+      transition: transform 0.2s ease;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 209, 102, 0.14);
+      color: var(--accent-gold);
+      border: 1px solid rgba(255, 209, 102, 0.4);
+      padding: 11px 18px;
+      border-radius: 50px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:active, .btn-secondary:active {
+      transform: scale(0.96);
+    }
+
+    /* ================= استوديو إعداد كود QR ================= */
+    #qr-studio {
+      width: 100%;
+      background: rgba(22, 7, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 209, 102, 0.28);
+      border-radius: 22px;
+      padding: 22px 18px;
+      margin-top: 10px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+    }
+
+    #qr-studio.hidden {
+      display: none !important;
+    }
+
+    .studio-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .studio-header h3 {
+      color: var(--accent-gold);
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+    }
+
+    .studio-header p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .local-warning {
+      background: rgba(255, 209, 102, 0.12);
+      border: 1px dashed rgba(255, 209, 102, 0.5);
+      color: #ffe599;
+      font-size: 0.8rem;
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+      text-align: right;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--accent-rose);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 182, 193, 0.25);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-pink);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 76px;
+    }
+
+    .presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .preset-chip {
+      background: rgba(255, 77, 121, 0.16);
+      border: 1px solid rgba(255, 77, 121, 0.35);
+      color: #ffd6e0;
+      font-size: 0.78rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .preset-chip:hover {
+      background: rgba(255, 77, 121, 0.32);
+    }
+
+    .qr-preview-box {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 18px;
+      width: fit-content;
+      margin: 14px auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 77, 121, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #qrcode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #qrcode img, #qrcode canvas {
+      display: block;
+      border-radius: 6px;
+    }
+
+    .qr-caption {
+      color: #5c1343;
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-top: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .studio-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #2b0c24;
+      color: #fff;
+      border: 1px solid var(--accent-gold);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      z-index: 100;
+      opacity: 0;
+      transition: all 0.35s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <canvas id="hearts-canvas"></canvas>
+
+  <div class="container">
+    
+    <!-- 1. شاشة الظرف المغلق عند فتح الـ QR -->
+    <section id="envelope-screen">
+      <div class="recipient-tag" id="envelope-to">رسالة خاصة من القلب ❤️</div>
+      <p style="color: var(--text-muted); font-size: 0.92rem;">وصلك ظرف مميز بمناسبة يوم مش عادي...</p>
+
+      <div class="envelope-wrapper" id="envelope-box" onclick="openGift()">
+        <div class="envelope-body">
+          <div class="envelope-flap"></div>
+          <div class="letter-peek">
+            <span>Happy Birthday</span>
+            <small style="font-size: 12px; color: #800f2f;">افتح الرسالة ❤️</small>
+          </div>
+          <div class="envelope-pocket"></div>
+        </div>
+        <div class="wax-seal">❤️</div>
+      </div>
+
+      <button class="open-btn" onclick="openGift()">
+        <span>افتح هديتك</span>
+        <span>✨</span>
+      </button>
+    </section>
+
+    <!-- 2. شاشة بطاقة عيد الميلاد الرومانسية -->
+    <section id="card-screen">
+      <div class="top-controls">
+        <button class="pill-btn" id="music-toggle" onclick="toggleMusic()">
+          <span id="music-icon">🔊</span>
+          <span id="music-text">الموسيقى تعمل</span>
+        </button>
+        <button class="pill-btn" onclick="burstHearts(35)">
+          <span>ابعت قلوب</span>
+          <span>💖</span>
+        </button>
+      </div>
+
+      <div class="birthday-card">
+        <div style="font-size: 1.8rem; margin-bottom: 4px;">✨🎂✨</div>
+        <h1 class="en-title">Happy Birthday</h1>
+        <div class="recipient-name" id="display-name">يا أغلى إنسان في حياتي ❤️</div>
+        
+        <div class="divider">❤️</div>
+
+        <p class="main-message" id="display-message">كل سنة وأنت أجمل حاجة حصلت في حياتي،
+وجودك جنبي بيخلي كل أيامى عيد،
+يارب سنة جديدة مليانة حب وسعادة وضحكتك متفارقش وشك أبداً ❤️</p>
+
+        <div class="quote-box" id="romantic-quote">
+          "في يوم ميلادك.. أحب أقولك إنك أجمل صدفة وأغلى هدية في عمري كله ✨"
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-primary" onclick="nextQuote()">رسالة إضافية من القلب ✨</button>
+          <button class="btn-secondary" onclick="burstHearts(45)">احتفال بالقلوب 🎉</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. استوديو إنشاء كود QR (يختفي تلقائياً عند فتح الرابط من الـ QR) -->
+    <section id="qr-studio">
+      <div class="studio-header">
+        <h3>📲 إعداد وتنزيل كود الـ QR</h3>
+        <p>اكتب الاسم والرسالة وحمّل صورة الـ QR لتفتح مباشرة على Chrome</p>
+      </div>
+
+      <div class="local-warning" id="local-warning">
+        ⚠️ <b>تنبيه مهم:</b> أنت فاتح الملف حالياً من جهازك (<code>file://</code>). عشان الـ QR يفتح عند أي شخص على Chrome، ارفع ملف <b>index.html</b> على موقع <b>Netlify Drop</b> أو <b>Tiiny.host</b> الأول، وبعدين حمّل الـ QR من الرابط الجديد.
+      </div>
+
+      <div class="presets">
+        <button class="preset-chip" onclick="applyPreset(0)">💕 رومانسي دافئ</button>
+        <button class="preset-chip" onclick="applyPreset(1)">✨ قصير وعميق</button>
+        <button class="preset-chip" onclick="applyPreset(2)">🌹 عربي & English</button>
+      </div>
+
+      <div class="form-group">
+        <label for="input-name">اسم الشخص (اختياري):</label>
+        <input type="text" id="input-name" class="form-control" placeholder="مثال: حبيبتي / سارة / نور عيني" oninput="updateCustomContent()" />
+      </div>
+
+      <div class="form-group">
+        <label for="input-msg">رسالة عيد الميلاد الرومانسية:</label>
+        <textarea id="input-msg" class="form-control" oninput="updateCustomContent()">كل سنة وأنت أجمل حاجة حصلت في حياتي،
+وجودك جنبي بيخلي كل أيامى عيد،
+يارب سنة جديدة مليانة حب وسعادة وضحكتك متفارقش وشك أبداً ❤️</textarea>
+      </div>
+
+      <div class="qr-preview-box">
+        <div id="qrcode"></div>
+        <div class="qr-caption">Scan Me ❤️ Happy Birthday</div>
+      </div>
+
+      <div class="studio-actions">
+        <button class="btn-primary" style="width: 100%;" onclick="downloadQR()">
+          تحميل كود الـ QR جاهز للطباعة والإرسال (PNG) 📥
+        </button>
+        <button class="btn-secondary" style="width: 100%;" onclick="copyShareLink()">
+          نسخ الرابط المباشر 🔗
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast">تم النسخ بنجاح!</div>
+
+  <script>
+    // ================== قراءة البيانات من الرابط (QR Parameters) ==================
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramTo = urlParams.get('to');
+    const paramMsg = urlParams.get('msg');
+    const isRecipientView = Boolean(paramTo || paramMsg);
+
+    const presets = [
+      {
+        name: "يا أغلى إنسان في حياتي ❤️",
+        msg: "كل سنة وأنت أجمل حاجة حصلت في حياتي،
